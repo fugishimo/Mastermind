@@ -11,7 +11,7 @@ True RNG: Secrets come from Random.org (0–7, duplicates allowed).
 
 
 Difficulties:
-Depending on the mode, the random number sequence can either be the normal 4 digits, or can be increased to 6 (medium) or 8 (hard) digits. 
+* Depending on the mode, the random number sequence can either be the normal 4 digits, or can be increased to 6 (medium) or 8 (hard) digits. 
 Normal = 4 digits
 Medium = 6 digits
 Hard = 8 digits
