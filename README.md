@@ -1,91 +1,85 @@
-Linkedin Mastermind Project 
-By: Nicholas Aguirre
+# Linkedin Mastermind Project 
+** By: Nicholas Aguirre **
 
-Mastermind Summary:
+## Mastermind Summary:
+- A command-line take on the classic Mastermind. The computer gets a secret sequence of digits fetched from Random.org (true randomness). Players have 10 attempts to crack the code, with standardized feedback after each guess.
 
-A command-line take on the classic Mastermind. The computer gets a secret sequence of digits fetched from Random.org (true randomness). Players have 10 attempts to crack the code, with standardized feedback after each guess.
-
-Core Features:
-True RNG: Secrets come from Random.org (0–7, duplicates allowed).
-
-
-
-Difficulties:
-* Depending on the mode, the random number sequence can either be the normal 4 digits, or can be increased to 6 (medium) or 8 (hard) digits. 
-Normal = 4 digits
-Medium = 6 digits
-Hard = 8 digits
+## Core Features
+- **True RNG:** Secrets come from Random.org (digits **0–7**, duplicates allowed).
 
 
 
-Modes:
-Single Player (Has to guess a random number sequence)
-
-Multiplayer (up to 4 players)
-* Shared secret (all guess the same random number sequence like in first player mode)
-* Different secrets (each player gets their own unique random number sequence)
-
+##Difficulties:
+- Depending on the mode, the random number sequence can either be the normal 4 digits, or can be increased to 6 (medium) or 8 (hard) digits. 
+- **Normal:** 4 digits  
+- **Medium:** 6 digits  
+- **Hard:** 8 digits
 
 
-How It Works:
-Attempts: Each player gets 10 guesses.
-
-Input: Enter digits separated by spaces (must match the chosen difficulty length).
-
-Commands:
-"#" → show only your guess history with feedback (In multiplayer mode only the players whose turn it is will be shown)
-
-"?" → request a hint (Reveals one correct digit in its correct position)
-
-Hints:
-Cost 1 attempt; blocked if only 1 attempt remains
-
-Single player: up to length of secret unique position hints
-Multiplayer (shared or different secrets): max 3 hints per player (unique positions)
-
-* If a player only has one guess left that he can attempt to guess the sequence, you will not be able to use a hint because a hint uses up a guess.
-
-Feedback format (never reveals positions directly):
-X correct numbers, Y correct locations
-
-correct locations = exact matches (right digit, right position)
-correct numbers = total count of guessed digits that appear anywhere in the secret, including those in the right spot (duplicate-safe: never count a digit more times than it appears in the secret).
+## Modes
+- **Single Player** — Guess a random number sequence.  
+- **Multiplayer (up to 4 players)**
+  - **Shared secret:** All players guess the **same** secret (like first-player mode).
+  - **Different secrets:** Each player gets their **own** secret.
 
 
 
-How scoring works for the Feedback loop:
-* The game scores each guess in two passes
+## How It Works
+- **Attempts:** Each player gets **10 guesses**.  
+- **Input:** Enter digits **separated by spaces** (must match the chosen difficulty length).
 
-Correct locations
-* Count how many digits are exactly right and in the right spot.
+## Commands
+- `#` — Show only **your** guess history with feedback.  
+  *(In multiplayer, only the player whose turn it is sees their own history.)*  
+- `?` — Request a **hint** (reveals **one correct digit** in its **correct position**).
 
-Correct numbers (wrong spot)
-* Add the numbers from the correct locations to this total number
-* From the leftovers, count how many guessed digits also appear in the secret—but never more times than the secret has them.
+## Hints
+- **Cost:** 1 attempt; **blocked** if only **1 attempt** remains.  
+- **Single Player:** Up to **length of secret** unique-position hints.  
+- **Multiplayer (shared or different secrets):** Max **3 hints per player** (unique positions).  
+- If a player has **only one guess left**, they **cannot** use a hint (it would consume the last guess).
 
-Example with duplicates
-Secret: 1 1 2 3
-Guess: 1 2 1 1
+## Feedback Format
+*(Positions are never revealed directly.)*  
+- **X correct numbers**, **Y correct locations**
 
-Pass 1 — Correct locations
-Only the first 1 lines up → 1
+**Definitions**  
+- **Correct locations** = exact matches (**right digit, right position**).  
+- **Correct numbers** = total count of guessed digits that appear **anywhere** in the secret (duplicate-safe: **never** count a digit more times than it appears in the secret, and this **includes** digits already in the right spot).
 
-Pass 2 — Correct numbers (total, duplicate-safe)
-Count how many times each digit appears in the secret and in the guess.
-For each digit, take the smaller of those two numbers. Add them up.
 
-Example: Secret = 1 1 2 3, Guess = 1 2 1 1
 
-1s: secret has 2, guess has 3 → count 2
-2s: secret has 1, guess has 1 → count 1
-3s: secret has 1, guess has 0 → count 0
+## How scoring works for the Feedback loop:
+- The game scores each guess in two passes
 
-correct numbers = 2 + 1 + 0 = 3
-(This total already includes any digits that were in the correct location.)
+- Correct locations: Count how many digits are exactly right and in the right spot.
 
-correct locations = 1
+- Correct numbers (wrong spot)
+  - Add the numbers from the correct locations to this total number
+  - From the leftovers, count how many guessed digits also appear in the secret—but never more times than the secret has them.
 
-Feedback shown: 3 correct numbers, 1 correct locations
+
+### Example with Duplicates
+**Secret:** `1 1 2 3`  
+**Guess:**  `1 2 1 1`  
+
+**Pass 1 — Correct locations**  
+- Only the first `1` lines up → **1**  
+
+**Pass 2 — Correct numbers (duplicate-safe)**  
+- From the leftovers, count how many guessed digits also appear in the secret — but never more times than the secret has them.  
+- For each digit, take the smaller of the two counts (secret vs guess). Add them up. 
+
+- 1s: secret has **2**, guess has **3** → count **2**  
+- 2s: secret has **1**, guess has **1** → count **1**  
+- 3s: secret has **1**, guess has **0** → count **0**  
+
+**correct numbers = 2 (correct numbers count) + 1(correct locations count) + 0 = 3**  
+*(This total already includes any digits that were in the correct location.)*
+
+**correct locations = 1**  
+
+**Feedback shown:** `3 correct numbers, 1 correct locations`  
 
 
 
