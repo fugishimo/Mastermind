@@ -33,9 +33,9 @@ Attempts: Each player gets 10 guesses.
 Input: Enter digits separated by spaces (must match the chosen difficulty length).
 
 Commands:
-# → show only your guess history with feedback (In multiplayer mode only the players whose turn it is will be shown)
+"#" → show only your guess history with feedback (In multiplayer mode only the players whose turn it is will be shown)
 
-? → request a hint (Reveals one correct digit in its correct position)
+"?" → request a hint (Reveals one correct digit in its correct position)
 
 Hints:
 Cost 1 attempt; blocked if only 1 attempt remains
