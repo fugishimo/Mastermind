@@ -83,18 +83,16 @@
 
 
 
-End of Game:
-Win: Immediately prints "All correct! You win!" and you’re done.
+## End of Game
+- **Win:** Immediately prints *“All correct! You win!”* and you’re done.  
 
-Single-player loss: Reveals the secret:
-Out of guesses! The correct sequence was: {secret}
+- **Single-player loss:** Reveals the secret:  
+  *Out of guesses! The correct sequence was: {secret}*  
 
-Multiplayer:
-Players who solve the sequence stop taking turns; others continue.
+- **Multiplayer:**  
+  - Players who solve the sequence stop taking turns; others continue.  
+  - Scoreboard ranks by **fewest personal turns to solve** (ties share rank number).  
+  - Non-solvers are listed last, and their secret is revealed:  
+    *Player X did not solve. The correct sequence was: {secret}*  
 
-Scoreboard ranks by fewest personal turns to solve (ties share rank number).
-
-Non-solvers are listed last and see their secret revealed:
-Player X did not solve. The correct sequence was: {secret}
-
-Replay: Prompt to start a fresh game (mode, players, and difficulty reset).
+- **Replay:** Prompt to start a fresh game (mode, players, and difficulty reset).
