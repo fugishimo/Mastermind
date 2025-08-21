@@ -1,5 +1,6 @@
 # Thoughts during development
 
+(8/20/2025)
 ## Initial thoughts
 
 - After reading the pdf of the game, I didn't want to dive right into it. I wanted to thoroughly think about the different components 
@@ -47,4 +48,15 @@ for a unique game that I wanted to create.
 - I've raised questions to myself to really understand how every component of the game will work at each possible point in the game. 
 - Figuring out all the ambigous parts of the game and deciding how I want it to be played.
 - One thing I did note is that I shouldn't keep trying to extend the game too much before coding. Although it's great to think of all the possibilites of what can be included in the game, I realized it will get far too complex before I even get a working product. I have more that I'd love to implement if time is on my side but for now this should be a great starting point to creating a unique mastermind game. (8/20/2025)
-  
+
+
+(8/21/2025)
+
+## First file (constants)
+- I feel like starting with constants was the most important because these are components that won't change throughout the game
+- Constants such as:
+  - Game dialogue
+  - Difficulty levels
+  - Amount of numbers in the random sequence
+  - Amount of attempts
+  - Commands in the game (hint and guess history)
