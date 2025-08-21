@@ -52,7 +52,7 @@ for a unique game that I wanted to create.
 
 (8/21/2025)
 
-## First file (constants)
+## constants file
 - I feel like starting with constants was the most important because these are components that won't change throughout the game
 - Constants such as:
   - Game dialogue
@@ -60,3 +60,42 @@ for a unique game that I wanted to create.
   - Amount of numbers in the random sequence
   - Amount of attempts
   - Commands in the game (hint and guess history)
+- After creating all the prompts I ran a quick loop to print out all messages so I can confirm it's formatted how I want it.
+
+## score file
+- This next file is going to host the code for calculating the locations and correct numbers
+- It is to take the current guess and check:
+  - First is the random sequence and guess the same length?
+  - Iterate through the guess sequence and figure if the number at current index n are the same in both the guess sequence and random sequence
+  - Figure out how many numbers are correct in the guess sequence
+  - Should the calculation of the {guess sequence == random number sequence} be calculated here too?
+    - For now I will just return the (correct location, correct numbers)
+    - We know that if {correct locations == len(random number sequence)} than it's a match.
+    - However {correct numbers != len(random number sequence)} is not a match
+    - ^ very important distinction
+  - Must handle duplicate numbers!
+  - Dict vs Tuple for returning values?
+      - I believe tuple is better for use because:
+          - only using two integers to return
+          - immutable
+          - dict seems overkill for the impl
+          - ex: correct_numbers, correct_locations = score_guess(secret, guess)
+- Steps to be taken:
+    - 1. check lengths
+    - 2. calculate exact matchs (correct location)
+    - 3. count freq of each number in both sequences (store in dict counter and create two counters)
+    - 4. gather all the digits from each and combine into one unique set that host digits appearing in both sequences without duplicating (union?)
+    - 5. loop through and add min(secret_count, guess_count) to final counter for "correct numbers"
+    - 6. return correct numbers and correct locations
+
+    **Example**
+    - len() == len()
+    - loop {
+        loop through secret number see if secret[n] == guess[n]
+    }
+    - counter()
+    - new = set1() | set2()
+    - loop {
+        counter += min(secret, guess)
+    }
+    - return (correct numbers, location)
