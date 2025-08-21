@@ -47,7 +47,7 @@ for a unique game that I wanted to create.
 - I've also created a simple flow chart to map out all the possiblites in terms of how the game is played starting from when the user picks single player or multiplayer mode. Up until this point I've only mapped out how the whole game will be played and all the little details at each level so far.
 - I've raised questions to myself to really understand how every component of the game will work at each possible point in the game. 
 - Figuring out all the ambigous parts of the game and deciding how I want it to be played.
-- One thing I did note is that I shouldn't keep trying to extend the game too much before coding. Although it's great to think of all the possibilites of what can be included in the game, I realized it will get far too complex before I even get a working product. I have more that I'd love to implement if time is on my side but for now this should be a great starting point to creating a unique mastermind game. (8/20/2025)
+- One thing I did note is that I shouldn't keep trying to extend the game too much before coding. Although it's great to think of all the possibilites of what can be included in the game, I realized it will get far too complex before I even get a working product. I have more that I'd love to implement if time is on my side but for now this should be a great starting point to creating a unique mastermind game.
 
 
 (8/21/2025)
@@ -99,3 +99,24 @@ for a unique game that I wanted to create.
         counter += min(secret, guess)
     }
     - return (correct numbers, location)
+
+## models file
+- Creating this file to create the player(s) and game rules as well
+- I know a need a game config object for:
+    - length of the game
+    - attempts
+    - shared secret
+    - num of players
+- Definitely will need a player object:
+    - their secret random number
+    - attempts
+    - hints
+    - did they solve
+    - history (guess + correct location, correct numbers)
+    - current player number
+- A way to track the players turn for multiplayer? 
+- An object to tie the whole game togther
+- Now I'm not sure if I need to add the score to the player class since each one is unique. 
+    - Just realized it will be going in the history attribute
+- 4 classes (player, game rules, current player, and and one to wrap them all together into a game)
+
