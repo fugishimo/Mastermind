@@ -198,6 +198,47 @@ def fetch_secret(length: int) -> list[int]:
 - oops forgot to add in feedback after someone answers.
 - Whilst creating the tests for this file I realized I haven't tested the score function to make sure it works properly
 
+## game config
+- Before I wanted to dive into the actual game logic, I wanted all the different components of the game created and each file has been test to make sure I'm getting the right response.
+- For me, I'm thinking if I'm creating the game config whilst trying to create all the components, I would miss certain things that I needed.
+- Thinking about what was needed for the game to even run before building the actual game was important to me
+- I have:
+    - the scoring logic for the location and correct numbers created
+    - dialogue for the cli depending on which option the player enters (ex: types "#" for hint and I've created the dialogue for that)
+    - player and game objects
+    - created the api first in another project folder to test how the api works and to get a working function. imported it here after
+    - a test file for each of these ^ to make sure they all work properly before working on the actually game logic
+- I'm thinking that I needed to create these components individually before tackling this beast
+- Now that I have all the things necessary to create the actual logic it should just be about connecting the pieces.
+- Some questions:
+    - Should I create the cli file first? This is where I'll run the game. The cli file will call the game file. At the same time the cli file can't really be created before the game file right?
+    - It's like the game file is dependent on all the other files being created (models, formatting, etc) before I can piece it together. such as the cli file is dependent on the game?
+- Also, what is needed in this game file?
+    - **all the logic such as:**
+        - 1. building the game
+        - 2. checking if the player wants multiplayer or single player
+        - 3. If multiplayer:
+            - first: how many players? (1-4)
+            - second: do they want a shared rng or a unique rng per player
+        - 4. player(s) will choose difficulty
+        - 5. player(s) get built
+        - 6. game starts:
+            - All games regardless of player count will have the options to choose hint, guess history, or enter a guess at beginning of each turn
+            - If player choose hint, they will lose a guess. Although I'm not sure as of right now if I want them to skip a turn by getting a hint of just deducting a guess but still letting them play.
+            - Choosing guess history should display their history (guess + feedback (location, correct nums)) followed by the game giving them the prompt again
+            - single player:
+                - keeps going until they either get the guess right or they use up all their guesses and lose
+                - should display the secret rng if player didn't guess right
+            - multiplayer:
+                - players will keep playing until:
+                    - all players guess the number
+                    - players use up all their guesses
+                - will display scoreboard at end of game with ranking depending on how many guesses they have left
+                - should display the secret rng for players who didn't guess correctly
+            - At the end of every game it will prompt if they want to play again or not
+- Think I hit home on all the relevant and important details regarding game flow and how this file should look.
+
+
 
         
 
