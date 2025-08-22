@@ -177,6 +177,27 @@ def fetch_secret(length: int) -> list[int]:
 - Made simple test for api to make sure it worked
 
 
+(8/22/2025)
+
+## formatting file
+- This will be similar to the api and score files in which it'll be to help format things like:
+    - hints
+    - guess remaining
+    - scoreboard
+    - current location 
+    - game dialogue for guess history
+    - ***believe that is everything***
+- Should be everything you see in the cli should be formatting here.
+- Should not crowd the core game file and cli file with this code.
+- Using it to separate the code to make it look cleaner
+- Not sure if I'll be using this for the scoreboard and keep tracking of players.
+    - thinking it'll be repetitve to create a function to keep track of players for the game because my models roundState function will be doing that
+    - ^ if it works properly 
+    - ***when building game logic make sure roundState is tracking properly before trying to implement it in formatting***
+- Created test file to make sure the formatting looks how I want
+- oops forgot to add in feedback after someone answers.
+
+
         
 
 
