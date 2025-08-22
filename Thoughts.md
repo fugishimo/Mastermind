@@ -196,6 +196,7 @@ def fetch_secret(length: int) -> list[int]:
     - ***when building game logic make sure roundState is tracking properly before trying to implement it in formatting***
 - Created test file to make sure the formatting looks how I want
 - oops forgot to add in feedback after someone answers.
+- Whilst creating the tests for this file I realized I haven't tested the score function to make sure it works properly
 
 
         
