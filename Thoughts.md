@@ -121,8 +121,8 @@ for a unique game that I wanted to create.
 - 4 classes (player, game rules, current player, and and one to wrap them all together into a game)
 
 ## API for RandomAPI
-- Created another project to test the api out first here's a solution that worked:
-- First I had to set up a virtual environment for the project:
+- Created another project to test the api out first here's a solution that worked that i'll implement here:
+- First I set up a virtual environment for the project:
     - Create a virtual environment (python3 -m venv venv)
     - Activate the virtual environment (source venv/bin/activate)
     - Install the required packages (pip install requests pytest)
@@ -169,7 +169,13 @@ def fetch_secret(length: int) -> list[int]:
     
     raise SystemExit("Failed to fetch random numbers after retries")
  ```
-        
+- Added the code and the rng worked. 
+- Created virtual env for project
+- .gitignore for pycache and venv
+- Requirements text for other users who pull from github
+- Added more constants to use for the api class
+- Made simple test for api to make sure it worked
+
 
         
 

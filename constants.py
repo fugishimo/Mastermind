@@ -9,6 +9,12 @@ DIFFICULTY_MAP = {
 HISTORY = "#"
 HINT = "?"
 
+# Random.org API
+RANDOM_ORG_BASE = "https://www.random.org"
+RANDOM_ORG_TIMEOUT_SEC = 5 # seconds    
+RANDOM_ORG_MAX_RETRIES = 3 # number of retries
+RANDOM_ORG_RETRY_BACKOFFS = [0.25, 0.5, 1.0] # seconds
+
 # Limits for the game (max attempts, min and max digits for the random sequence)
 MAX_ATTEMPTS = 10
 MIN_DIGITS = 0
