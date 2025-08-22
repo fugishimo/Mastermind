@@ -1,4 +1,5 @@
 from constants import MAX_ATTEMPTS
+from models import Player
 
 ORDINALS = {
     1: "first",
