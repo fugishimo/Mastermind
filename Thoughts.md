@@ -294,6 +294,98 @@ def fetch_secret(length: int) -> list[int]:
     - timed turns
     - daily challenge? if made into a server just like wordle
     - bots for single player? **i liked this idea**
+
+## *Bot development (first addition to current game)*
+- creating a bot to play against a solo player if he feels lonely or wants a challenge
+- how the flow would look:
+    - player chooses single mode
+    - gets prompted something like:
+        - solo
+        - versus bot 
+    - player picks bot
+    - player now chooses match type:
+        - shared rng
+        - unique rng for both and player
+    - player now chooses bot difficulty:
+        - normal (casual, makes mistakes)
+        - medium (smarter)
+        - hard (expert, highly efficient solver)
+    - player than chooses difficulty mode for game (4, 5, or 6 rng)
+    - game starts...
+- going to need to create 3 bots with varying difficulty
+- ***shared foundation across all 3 bots***
+    - bots only see what a human would: their own guesses and feedback (correct-place, correct-digit). Never peek at the secret
+    - add a thinking delay range (1-5 seconds?) so it feels alive
+    - standard alternating turns
+    - winner will be chosen based on how many attempts they have left (because hints remove attempts)
+    - if player and bot are on same turn and player guesses it right, the bot will have one turn to get it right
+    - if tied at the end than you can choose to play again (prompts you back to very beginning where you choose single/multiplayer) or exit
+    - bots will be able to use hints
+    - bot difficulty designs:
+        - info digestion: bot can use its past history and see your answers (shared rng only) to make its guess
+        - if playing unique rng than bot will not look at your answers since it will not help
+        - duplicates: fully respects duplicate digits (multiset logic)
+        - no rule breaks: always the right length, valid digits (0-7), no exact duplicate guesses
+        - “mistake rate” means intentional sub optimal choices that keep it fun for player (goes down the higher the bot difficulty)
+
+- **refined foundation across bots**
+    - match types:
+        - shared code: you and the bot each try to crack the same secret
+        - separate codes: you and the bot each try to crack your own secret
+    - the bot does not see your guesses or feedback, and you do not see the bots
+    - on the player UI during the game, the only bot status line is neutral “Bot made a guess.” (wont know how many attempts or hint its used)
+    - full histories and outcomes are revealed only on the end scoreboard
+    - standard alternating turns b/w player and bot
+    - if one side solves early, they enter a dormant state and their later turns they auto pass silently (still shown as “Bot made a guess.”), while the other side continues until solved or out of attempts
+    - game ends when both sides have either solved or exhausted attempts, then show the scoreboard
+    - winner is based on how many attempts they have left. who ever has more attempts left wins (means took less turns to solve)
+    - naturally penalizes hint usage ^^^
+    - if attempts left are equal: rock/paper/scissors (best of 3)
+    - scoreboard (what’s shown):
+        - solved or not solved
+        - history (guesses + feedback)
+        - how many attempts a player/bot has left
+        - winner banner saying (example: "Player won!"), if needed, RPS result (example: “Player won RPS 2–1”)
+    - hints
+        - each hint immediately deducts 1 attempt
+        - max 1 hint per game per side and no hint before turn 3
+        - if the bot uses a hint, show only: “Bot used a hint.” (Do not reveal hint content during play.)
+        - use your game’s existing hint types (f"{digit} is in {ordinal(pos + 1)} position"). Content is applied only to the requesting side
+        - usage based on different bot level: **as of writing this im not set on these rules but when building bots will probably refine**
+            - normal:
+                - from turns 4–7, if not solved: 35–50% chance each turn to use its single hint, regardless of progress
+                - never uses a hint after turn 7
+            - medium:
+                - use 1 hint if no improvement for numbers in correct place for 3 consecutive turns and (current attempts left is < 5)
+                - 6 digit games, allow this to trigger one turn earlier (from turn 4)
+            - hard:
+                - use hint anytime after these two requirements have been made:
+                    - 2 attempts have been made
+                    - 2 consecutive turns produced the same feedback pattern or internal estimate suggests finishing would likely exceed remaining attempts by > 1
+    - thinking delay instead of instant response to make it more human (haven't figured out exact timing yet)
+    - bots fully respect multiset logic and rely on the engine’s feedback function as source of truth (they will have no access to the secret sequence that was generated)
+    - no rule breaks: always correct length, digits 0–7, and no exact duplicate guesses
+    - mistake rate: selection only (choosing a lower information but legal guess), decreasing with difficulty:
+        - normal: noticeable 15-25 % of turns pick a lower info guess. feels human? (honestly not sure what the percent should be)
+        - medium: minimal 10-15% of turns pick a lower info guess
+        - hard: none (or negligible) 5-10% of turns pick a lower info guess (near optimal guesses)
+        - no backtracking: never choose a guess inconsistent with prior feedback
+        - after a hint: next turn has 0% mistake chance (meaning atleast 1 number in the guess should be correct)
+        - could either code a percentage or a top-K sampling
+    - visibility & messaging rules:
+        - show player feedback only to the player
+        - for the bot: prompt “Bot is thinking…” during the delay → and when they made a guess show this prompt “Bot made a guess.”
+        - after game: reveal full histories, outcomes, and metrics on the scoreboard for bot **only**
+
+    
+
+
+
+
+
+
+
+
         
 
 
