@@ -8,6 +8,8 @@ ORDINALS = {
     4: "fourth",
     5: "fifth",
     6: "sixth",
+    7: "seventh",
+    8: "eighth",
 }
 
 def guesses_remaining_line(player) -> str:
