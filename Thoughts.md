@@ -237,6 +237,18 @@ def fetch_secret(length: int) -> list[int]:
                 - should display the secret rng for players who didn't guess correctly
             - At the end of every game it will prompt if they want to play again or not
 - Think I hit home on all the relevant and important details regarding game flow and how this file should look.
+**Progress Update**
+- so i created the game logic and hopefully hit all points i have listed out.
+- I extensively tested each function and checked each players attributes to make sure it is tracking right such as:
+    - history
+    - feedback
+    - attempts
+    - guess
+    - secret
+    - made sure advance_turn is tracking the next player properly
+    - scoreboard
+    - game is getting built correctly
+- I believe I hit all the main ideas of the game. will add anything necessary/forgotten once i build the cli file
 
 
 
