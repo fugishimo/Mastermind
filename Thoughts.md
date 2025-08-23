@@ -125,7 +125,7 @@ for a unique game that I wanted to create.
 - First I set up a virtual environment for the project:
     - Create a virtual environment (python3 -m venv venv)
     - Activate the virtual environment (source venv/bin/activate)
-    - Install the required packages (pip install requests pytest)
+    - Install the required packages (pip install requests)
 - Now the code:
 ```python 
 def fetch_secret(length: int) -> list[int]:
@@ -251,6 +251,34 @@ def fetch_secret(length: int) -> list[int]:
 - I believe I hit all the main ideas of the game. will add anything necessary/forgotten once i build the cli file
 
 
+(8/23/2025)
+
+## CLI file
+- Now just got to combine all the game logic together with the actual flow of the game in the cli
+- basically have to write this again but for the cli and adding the dialogue from the constants file:
+    - **all the logic such as:**
+        - 1. building the game
+        - 2. checking if the player wants multiplayer or single player
+        - 3. If multiplayer:
+            - first: how many players? (1-4)
+            - second: do they want a shared rng or a unique rng per player
+        - 4. player(s) will choose difficulty
+        - 5. player(s) get built
+        - 6. game starts:
+            - All games regardless of player count will have the options to choose hint, guess history, or enter a guess at beginning of each turn
+            - If player choose hint, they will lose a guess. Although I'm not sure as of right now if I want them to skip a turn by getting a hint of just deducting a guess but still letting them play.
+            - Choosing guess history should display their history (guess + feedback (location, correct nums)) followed by the game giving them the prompt again
+            - single player:
+                - keeps going until they either get the guess right or they use up all their guesses and lose
+                - should display the secret rng if player didn't guess right
+            - multiplayer:
+                - players will keep playing until:
+                    - all players guess the number
+                    - players use up all their guesses
+                - will display scoreboard at end of game with ranking depending on how many guesses they have left
+                - should display the secret rng for players who didn't guess correctly
+            - At the end of every game it will prompt if they want to play again or not
+- the cli should follow this exact flow of the game. we have all functions to perform these actions 
 
         
 

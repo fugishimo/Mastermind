@@ -35,11 +35,11 @@ MSG_DIFFICULTY = (
 MSG_TURN_PROMPT = (
     'Type "#" for history of guesses and feedback,\n'
     'Type "?" for hints,\n'
-    'Type your guess with a space in between each number then click enter\n'
+    'Type your guess with a space in between each number then click enter (pick a number between 0 and 7)\n'
 )
 MSG_INVALID_INPUT = "Invalid input choose again.\n"
 MSG_ONE_LEFT_NO_HINT = "You only have 1 guess remaining, you cannot ask for a hint. Please enter your guess.\n"
-MSG_NO_HINTS_LEFT = "No hints remaining. Please enter your guess.\n"
+MSG_NO_HINTS_LEFT = "No hints remaining.\n"
 
 MSG_ALL_CORRECT = "All correct! You win!\n"
 MSG_OUT_OF_GUESSES = "Out of guesses! The correct sequence was: {secret}\n"
