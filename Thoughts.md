@@ -280,6 +280,20 @@ def fetch_secret(length: int) -> list[int]:
             - At the end of every game it will prompt if they want to play again or not
 - the cli should follow this exact flow of the game. we have all functions to perform these actions 
 
+## Improvements/Additions
+- I really want to expand on the current game I have and here's a few thoughts:
+    - multiplayer server like among us?
+        - would start up the server here and than share it to others
+        - answers could be hidden if playing in shared mode and potentially won't even need the option for shared or unique secrets
+        - could create voting system for players to choose if they want a shared or unique secret (if tie than game randomly picks)
+        - share a code or server numbers
+    - display number of attempts on leaderboard?
+    - should i create a web interface? 
+        - would mean the cli file would be irrelevant and I'd need to create a wnole new frontend file
+    - power hints one per game: “reveal one correct position with correct number”
+    - timed turns
+    - daily challenge? if made into a server just like wordle
+    - bots for single player? **i liked this idea**
         
 
 
