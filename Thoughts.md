@@ -398,12 +398,19 @@ def fetch_secret(length: int) -> list[int]:
     - articles:
         - https://stackoverflow.com/questions/62430071/donald-knuth-algorithm-mastermind
         - https://supermastermind.github.io/playonline/optimal_strategy.html
-        - 
 - i'm not even sure in terms of efficiency how good or bad most of them even are at this moment/
 - maybe i'll have a mixture two of them or even put my own twist on one of the strategies i've come across
 - im still not sure which strategy i want to pick but i do know i want all the technical details about the bot figured out and written out before i start building.
 - having the flow in the cli, dialogue, rules, and bot difficulty level confirmed is important to me so i have a foundation
-- sure ill maybe twink the rules a bit as i go but i the difficulty figureed out before i begin because that's the most complex part of the whole bot
+- sure ill maybe twink the rules a bit as i go but having the difficulty figureed out before i begin because that's the most complex part of the whole bot
+
+##other notes for bot
+- will the player experience be better or worse if i show the the bots guess? or will it keep it fun by the player not knowing what the bot is doing
+- should the bots actions be shown in the cli?
+- im starting to feel like it'll make the player experience better to know that they are actually playing against a bot when they see the actions in the cli instead of just "bot is thinking" and "bot made a guess your turn"
+- will ask others for feedback so i can make the experience for the player as fun as possible
+
+
         
 
 
