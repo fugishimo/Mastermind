@@ -377,7 +377,34 @@ def fetch_secret(length: int) -> list[int]:
         - for the bot: prompt “Bot is thinking…” during the delay → and when they made a guess show this prompt “Bot made a guess.”
         - after game: reveal full histories, outcomes, and metrics on the scoreboard for bot **only**
 
-    
+- **revising this slightly**
+- removing:
+    - difficulty levels for bot is getting removed as researching how to create different guessing strategies is becoming far too complex and dont know if I'd even be able to implement them all on time
+    - plus even brainstorming and figuring out what type of guessing strategy to implement has been challenging
+- trying to keep the bot between normal - medium level difficulty as a standard
+- researching and trying to figure out the best way to implement a bot where the guess strategy isn't too complex but still poses a challenge to the player
+- here's the strategies i've come across on google and talking with gpt:
+    - Opening Script: play two fixed “spread” guesses to quickly learn which digits are present.
+    - Random-from-Candidates (RFC): after pruning, take the first unseen candidate from a (once) shuffled bag.
+    - First-Consistent (FC): pre-shuffle the universe/pool once; each turn pick the earliest code still consistent.
+    - Frequency-Best (Greedy): for each position, choose the most common digit among remaining candidates; nudge if you’d repeat.
+    - Bucket-Pick (Rules): classify candidates as Good/OK/Bad by simple rules (uniqueness, repeats) and pick randomly from the best bin.
+    - Beam-Width-1: scan a small pool with a simple score and keep only the single best seen (no sorting).
+    - Two-Dice (Tournament): sample two random candidates, score both, pick the better—adds bias without sorting.
+    - Position-Sweep (Lock-In): freeze positions that look right; cycle likely digits through the remaining slots.
+    - Top-K Sampling: rank candidates, keep the top K, and pick randomly among them for human-like variety.
+    - Info-Gain / Best-Split: choose the guess that minimizes the largest feedback bucket (worst-case survivors) using sampled evaluation.
+    - Endgame Clamp: when few candidates remain (≈8–12), stop heuristics and guess directly from the remaining bag.
+    - articles:
+        - https://stackoverflow.com/questions/62430071/donald-knuth-algorithm-mastermind
+        - https://supermastermind.github.io/playonline/optimal_strategy.html
+        - 
+- i'm not even sure in terms of efficiency how good or bad most of them even are at this moment/
+- maybe i'll have a mixture two of them or even put my own twist on one of the strategies i've come across
+- im still not sure which strategy i want to pick but i do know i want all the technical details about the bot figured out and written out before i start building.
+- having the flow in the cli, dialogue, rules, and bot difficulty level confirmed is important to me so i have a foundation
+- sure ill maybe twink the rules a bit as i go but i the difficulty figureed out before i begin because that's the most complex part of the whole bot
+        
 
 
 
