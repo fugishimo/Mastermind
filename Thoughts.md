@@ -411,7 +411,23 @@ def fetch_secret(length: int) -> list[int]:
 - will ask others for feedback so i can make the experience for the player as fun as possible
 
 
+(8/22/2025)
+
         
+##backend additions
+- whilst working on break started brainstorming more ways to secure my backend and from my time at atlassian i remember having to implement all these
+- going to implement a simple rate limiter, logging, and possibly circuit breaker for the api.
+- https://martinfowler.com/bliki/CircuitBreaker.html
+- https://stackoverflow.com/questions/40748687/python-api-rate-limiting-how-to-limit-api-calls-globally
+- logging:
+    - https://docs.python.org/3/library/logging.html
+    - https://stackoverflow.com/questions/16337511/log-all-requests-from-the-python-requests-module
+- files to be changed/added (just from top of my head):
+    - random_org (api file needs to obv implement these)
+    - new files to separate it from the api file (so it keeps everything clean and easy to read):
+        - logging file? not sure as of right now if i need a whole new file or if i can just implement it into the current code without having to create whole new file
+        - circuit breaker (open, close, half open)
+        - rate limiting 
 
 
 
