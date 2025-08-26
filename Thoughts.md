@@ -418,6 +418,7 @@ def fetch_secret(length: int) -> list[int]:
 - whilst working on break started brainstorming more ways to secure my backend and from my time at atlassian i remember having to implement all these
 - going to implement a simple rate limiter, logging, and possibly circuit breaker for the api.
 - https://martinfowler.com/bliki/CircuitBreaker.html
+- https://pypi.org/project/circuitbreaker/
 - https://stackoverflow.com/questions/40748687/python-api-rate-limiting-how-to-limit-api-calls-globally
 - logging:
     - https://docs.python.org/3/library/logging.html
@@ -428,6 +429,7 @@ def fetch_secret(length: int) -> list[int]:
         - logging file? not sure as of right now if i need a whole new file or if i can just implement it into the current code without having to create whole new file
         - circuit breaker (open, close, half open)
         - rate limiting 
+- https://pypi.org/project/circuitbreaker/
 
 
 
