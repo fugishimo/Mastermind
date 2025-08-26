@@ -432,7 +432,21 @@ def fetch_secret(length: int) -> list[int]:
 - https://pypi.org/project/circuitbreaker/
 - Tried doing a fastapi REST impl currently not working tho. was researching how to implement REST api 
 
-
+- **update on api**
+- got a working fix 
+- http://127.0.0.1:8000/docs#/default/live_scoreboard_live_scoreboard_get
+- some thoughts after impl:
+    - realized scoreboard ranking was wrong after looking at swagger docs
+        - orginally was ranking based of attempts_taken_to_solve but it shoud've been based on attempts_left
+    - didn't know fastapi generates swagger documentation which is great to see live feedback of the game and seeing current players stats
+    - my orginal impl didn't allow me to run a server but rather just called the api.
+        - this isn't bad for such a small app, but thinking on a bigger scale it wasn't functional if i wanted to create a server with players being able to join from other laptops
+            - plus i wanted to impl retry logic, rate limiting, and circuit breakers
+        - uvicorn runs the server on the background without the player knowing
+            - when i was first impl-ing i was running the server and than game but figured out how to just call it when i run the file
+        - fastapi routes handle I/O, game.py owns rules/state transitions, and now random number sequence client is injected
+        - my original impl is meant really just for my own laptop but now as I build it out more i can create an "amongst us" like game
+        - can also had proper logging for the endpoints
 
 
 
