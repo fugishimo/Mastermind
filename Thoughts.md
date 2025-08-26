@@ -411,7 +411,7 @@ def fetch_secret(length: int) -> list[int]:
 - will ask others for feedback so i can make the experience for the player as fun as possible
 
 
-(8/22/2025)
+(8/24/2025) - (8/25/2025) 
 
         
 ##backend additions
