@@ -20,6 +20,8 @@ app = FastAPI(title="mastermind-live", version="1.0.0")
 #     shared_secret: bool
 #     current_player_index: int
 #     players: List[PlayerState]
+class Mastermind(BaseModel):
+    message: str
 
 class ScoreboardEntry(BaseModel):
     rank: int
@@ -71,6 +73,10 @@ class Secrets(BaseModel):
 #         players=players,
 #     )
 
+@app.get("/", response_model=Mastermind)
+def root():
+    return {"message": "Welcome to the Mastermind. go to \"lhttp://127.0.0.1:8000/docs#\" to see the api working! hehe"}
+
 @app.get("/live/secrets",response_model=Secrets)
 def get_secrets():
     g = get_current()
@@ -79,15 +85,6 @@ def get_secrets():
     current_player = g.players[g.round_state.current_player_idx]
     return Secrets(current_player_secret=current_player.secret)
 
-# @app.get("/live/scoreboard", response_model=LiveScoreboardResp)
-# def live_scoreboard():
-#     from game import build_scoreboard
-#     g = get_current()
-#     if not g:
-#         raise HTTPException(404, "no_active_game")
-#     ranked = build_scoreboard(g.players)
-#     entries = [ScoreboardEntry(rank=rank, player_index=p.index, solved=p.solved, attempts_taken=p.attempts_taken_to_solve if p.solved else None) for rank, p in ranked]
-#     return LiveScoreboardResp(finished=g.finished, scoreboard=entries)
 @app.get("/live/scoreboard", response_model=LiveScoreboardResp)
 def live_scoreboard():
     from game import build_scoreboard
