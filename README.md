@@ -35,7 +35,7 @@
 
 ## Hints
 - **Cost:** 1 attempt; **blocked** if only **1 attempt** remains.  
-- **Single Player:** Up to **length of secret** unique-position hints.  
+- **Single Player:** Up to **length of secret** unique position hints.  
 - **Multiplayer (shared or different secrets):** Max **3 hints per player** (unique positions).  
 - If a player has **only one guess left**, they **cannot** use a hint (it would consume the last guess).
 
@@ -56,7 +56,7 @@
 
 - Correct numbers (wrong spot)
   - Add the numbers from the correct locations to this total number
-  - From the leftovers, count how many guessed digits also appear in the secret—but never more times than the secret has them.
+  - From the leftovers, count how many guessed digits also appear in the secret, but never more times than the secret has them.
 
 
 ### Example with Duplicates
@@ -91,8 +91,25 @@
 
 - **Multiplayer:**  
   - Players who solve the sequence stop taking turns; others continue.  
-  - Scoreboard ranks by **fewest personal turns to solve** (ties share rank number).  
-  - Non-solvers are listed last, and their secret is revealed:  
+  - Scoreboard ranks by **fewest personal turns to solve (attempts/guesses left)** (ties share rank number).  
+  - Those who do not solve are listed last, and their secret is revealed:  
     *Player X did not solve. The correct sequence was: {secret}*  
 
 - **Replay:** Prompt to start a fresh game (mode, players, and difficulty reset).
+
+## How to Start Game
+- in this order:
+    - *A* start up virtual environment **IMPORTANT YOU DONT HAVE TO JUST MAKE SURE TO INSTALL REQUIREMENTS**:
+        - Create a virtual environment (python3 -m venv venv)
+        - Activate the virtual environment (source venv/bin/activate)
+    - *B* download requirements:
+        - pip install -r requirements.txt
+    - *C* run play_with_api.py file
+        - either with the play button
+        - or
+        - python3 play_with_api.py
+- play game in terminal
+- to access swagger docs:
+    - http://127.0.0.1:8000/docs
+- root:
+    - http://127.0.0.1:8000/
