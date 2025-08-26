@@ -9,8 +9,12 @@ from constants import (
     RANDOM_ORG_RETRY_BACKOFFS,
     )
 import logging   
+from ratelimit import limits, sleep_and_retry
 
+FIFTEEN_MINUTES = 600 #used 10 seconds to test the  rate limiter 600 is for the actual program
 
+@sleep_and_retry
+@limits(calls=10, period=FIFTEEN_MINUTES)
 def fetch_secret(length: int) -> list[int]:
     """Fetch random digits (0-7) from Random.org."""
     # https://www.random.org/integers/?num=4&min=0&max=7&col=1&base=10&format=plain&rnd=new
