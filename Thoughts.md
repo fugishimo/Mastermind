@@ -126,6 +126,7 @@ for a unique game that I wanted to create.
     - Create a virtual environment (python3 -m venv venv)
     - Activate the virtual environment (source venv/bin/activate)
     - Install the required packages (pip install requests)
+    - Update requirements (pip freeze > requirements.txt)
 - Now the code:
 ```python 
 def fetch_secret(length: int) -> list[int]:
