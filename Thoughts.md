@@ -461,6 +461,22 @@ rate limiting:
     - https://pypi.org/project/ratelimit/
     - very simple impl and limited the api calls to 10 attempts in 10 mins
 
+## some steps for configuring:
+- in this order:
+    - *A* would start up virtual environment **IMPORTANT YOU DONT HAVE TO JUST MAKE SURE INSTALL REQUIREMENTS**:
+        - Create a virtual environment (python3 -m venv venv)
+        - Activate the virtual environment (source venv/bin/activate)
+    - *B* download requirements:
+        - pip install -r requirements.txt
+    - run play_with_api.py file
+        - either with the play button
+        - or
+        - python3 play_with_api.py in venv terminal
+- play game in terminal
+- to access swagger docs:
+    - http://127.0.0.1:8000/docs
+- root:
+    - http://127.0.0.1:8000/
 
 
 
