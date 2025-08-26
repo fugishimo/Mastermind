@@ -457,6 +457,10 @@ def fetch_secret(length: int) -> list[int]:
 - logging:
     - https://docs.python.org/3/library/logging.html
     - https://docs.python.org/3/howto/logging.html
+rate limiting:
+    - https://pypi.org/project/ratelimit/
+    - very simple impl and limited the api calls to 10 attempts in 10 mins
+
 
 
 
