@@ -8,7 +8,7 @@ from constants import (
     RANDOM_ORG_MAX_RETRIES,
     RANDOM_ORG_RETRY_BACKOFFS,
     )
-    
+import logging   
 
 
 def fetch_secret(length: int) -> list[int]:
@@ -41,13 +41,17 @@ def fetch_secret(length: int) -> list[int]:
             
             digits = parse_response(resp.text)
             if is_valid_sequence(digits):
+                logging.info("valid sequence: length=%d attempts=%d taken to grab sequence", length, attempt)
                 return digits
             
+            logging.warning("Random.org grabbed an invalid sequence digits=%d", digits)
             raise ValueError("Invalid sequence from Random.org")
             
         except Exception:
-            if attempt < len(RANDOM_ORG_RETRY_BACKOFFS):
+            logging.warning("Trying again to fetch secret attempted=%d", attempt + 1)
+            if attempt <= len(RANDOM_ORG_RETRY_BACKOFFS):
                 time.sleep(RANDOM_ORG_RETRY_BACKOFFS[attempt])
             continue
-    
+
+    logging.warning("Failed to fetch a valid sequence after retries length=%d and retries=%d", length, RANDOM_ORG_MAX_RETRIES)
     raise SystemExit("Failed to fetch random numbers after retries")
