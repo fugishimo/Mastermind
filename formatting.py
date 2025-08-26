@@ -17,7 +17,7 @@ def guesses_remaining_line(player) -> str:
     # Multiplayer:   "N Guesses Remaining - Player X"
     if player is None:
         return f"{MAX_ATTEMPTS} Guesses Remaining"
-    return f"{player.attempts_left} Guesses Remaining - Player {player.index}"
+    return f"\n{player.attempts_left} Guesses Remaining - Player {player.index}"
 
 def render_feedback(correct_numbers: int, correct_locations: int) -> str:
     return f"{correct_numbers} correct numbers, {correct_locations} correct locations"

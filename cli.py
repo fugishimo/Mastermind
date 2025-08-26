@@ -58,7 +58,7 @@ def main():
                     print(MSG_NO_HINTS_LEFT)
                     continue
                 hint_text = give_hint(p, cfg)
-                print(hint_text, "\n")
+                print(hint_text)
                 continue
 
             # Guess
@@ -68,7 +68,7 @@ def main():
                 continue
 
             correct_numbers, correct_locations, feedback = process_guess(p, guess)
-            print(feedback, "\n")
+            print(feedback)
             if p.solved:
                 print(MSG_ALL_CORRECT)
 
