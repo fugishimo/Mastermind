@@ -449,6 +449,15 @@ def fetch_secret(length: int) -> list[int]:
         - my original impl is meant really just for my own laptop but now as I build it out more i can create an "amongst us" like game
         - can also had proper logging for the endpoints
 
+(8/25/2025)
+
+## updates
+- with new api design i did want to add some logging and rate limiting for it
+- also want to add circuit breakers although may be overkill since its such a small app and only using one api.
+- logging:
+    - https://docs.python.org/3/library/logging.html
+    - https://docs.python.org/3/howto/logging.html
+
 
 
 
