@@ -430,6 +430,7 @@ def fetch_secret(length: int) -> list[int]:
         - circuit breaker (open, close, half open)
         - rate limiting 
 - https://pypi.org/project/circuitbreaker/
+- Tried doing a fastapi REST impl currently not working tho. was researching how to implement REST api 
 
 
 
