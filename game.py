@@ -5,7 +5,7 @@ from random_org import fetch_secret
 from score import score_guess
 from formatting import render_feedback, ordinal
 
-# ---- Build config/state ----
+# build config/state
 
 def build_game_config(mode: str, num_players: int | None, shared_choice: str | None, difficulty: str) -> GameConfig:
     length = DIFFICULTY_MAP[difficulty]
@@ -33,7 +33,7 @@ def init_game(cfg: GameConfig) -> GameState:
     players = create_players(cfg)
     return GameState(config=cfg, players=players, round_state=RoundState(current_player_idx=0), finished=False)
 
-# ---- Turn helpers ----
+# turn helpers
 
 def current_player(state: GameState) -> Player:
     return state.players[state.round_state.current_player_idx]
@@ -50,7 +50,7 @@ def advance_turn(state: GameState) -> None:
 def any_player_can_play(state: GameState) -> bool:
     return any((not p.solved and p.attempts_left > 0) for p in state.players)
 
-# ---- Hints ----
+# hints
 
 def hint_cap(cfg: GameConfig) -> int:
     return cfg.length if cfg.num_players == 1 else 3
@@ -72,7 +72,7 @@ def give_hint(p: Player, cfg: GameConfig) -> str:
             return f"{digit} is in {ordinal(pos + 1)} position"
     return "No hints remaining. Please enter your guess."
 
-# ---- Guess processing ----
+# guess processing
 
 def process_guess(p: Player, guess: List[int]) -> tuple[int, int, str]:
     correct_numbers, correct_locations = score_guess(p.secret, guess)
@@ -94,22 +94,23 @@ def process_guess(p: Player, guess: List[int]) -> tuple[int, int, str]:
 
     return (correct_numbers, correct_locations, feedback)
 
-# ---- Scoreboard ----
+# scoreboard
 
 def build_scoreboard(players: List[Player]) -> List[tuple[int, Player]]:
-    # Rank solvers by attempts_taken_to_solve (ascending); tie → same rank number.
+    # Rank solvers by p.attempts_left (ascending); tie → same rank number.
     solved = [p for p in players if p.solved]
     unsolved = [p for p in players if not p.solved]
 
-    solved.sort(key=lambda p: (p.attempts_taken_to_solve, p.index))
+    solved.sort(key=lambda p: (-p.attempts_left, p.index))
 
     ranked: List[tuple[int, Player]] = []
     rank = 0
     last_attempts = None
+
     for p in solved:
-        if last_attempts is None or p.attempts_taken_to_solve != last_attempts:
+        if last_attempts is None or p.attempts_left != last_attempts:
             rank = (rank + 1) if rank > 0 else 1
-            last_attempts = p.attempts_taken_to_solve
+            last_attempts = p.attempts_left
         ranked.append((rank, p))
 
     if unsolved:

@@ -96,7 +96,7 @@ def main():
             break
         # else: full reset
 
-# ---- Input helpers ----
+# input helpers
 
 def input_until_valid(valid_set: set[str], prompt: str) -> str:
     while True:
