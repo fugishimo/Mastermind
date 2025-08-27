@@ -449,7 +449,7 @@ def fetch_secret(length: int) -> list[int]:
         - my original impl is meant really just for my own laptop but now as I build it out more i can create an "amongst us" like game
         - can also had proper logging for the endpoints
 
-(8/25/2025)
+(8/26/2025)
 
 ## updates
 - with new api design i did want to add some logging and rate limiting for it
@@ -479,6 +479,31 @@ rate limiting:
     - http://127.0.0.1:8000/
 
 
+
+(8/27/2025)
+
+
+##final thoughts
+- after implementing the new fastapi design and logging, if i had more time there is a couple things i'd add/change
+- originally when i created the game with my first api design i wasn't asking my backend to do too much other than some simple timeouts and retries. with this design the frontend never saw anything the backend was doing
+    - it was client only and only acted when i typed 
+- what i would change
+    - frontend:
+        - user experience is the most important aspect of the whole project
+        - playing in the cli might not have been the best option in hindsight because all my logs and everytime i use an endpoint it generates a message in the terminal for the player to see
+        - where as if i had built the frontend on the web, all the logs pertaining to the server would've been out of sight and the terminal would've been soley for logs
+- the bot for single player mode
+- overall i think doing a REST api design and everything else i added is better for these reasons:
+    - game can be scaled with new design and impl of a server
+    - let others watch or drive the game via /docs or simple HTTP calls
+    - resiliency patterns (retry/backoff with the breaker), traffic monitor (rate limit), observe (logging), and clean API design for scaling
+    - first design was client only calls but now i implemented client + server for scalibility
+    - with more users can add load balancers, databases, cache, etc
+- in the beginning i wasn't thinking "scalibilty" because all i saw was just being able to call an api and play a game. as i begun to think more after my original design i started having more questions:
+    - what if more players want to play
+    - can i even scale this first design if hypthothetically i had a frontend on the web and hosted it and allowed multiple people to play
+    - if i have all these players playing there's no way my original design would work it would get overwhelmed at some point
+- although im happy everything i've implemented works it definitely can use more work on the frontend and should've been played on a web interface instead of the cli because of all the call logs that show up. i couldnt quite work out how to remove logs off the terminal because that is where they usually live
 
 
 
