@@ -10,9 +10,22 @@ from constants import (
     )
 import logging   
 from ratelimit import limits, sleep_and_retry
+from circuitbreaker import circuit
 
 FIFTEEN_MINUTES = 600 #used 10 seconds to test the  rate limiter 600 is for the actual program
 
+#basically have 15 total attempts to call api before we trip the circuit breaker. 
+#if we fail to fetch the secret 3 times (retry limit = 3) than that will be 1 of 5 attempts, leaving 4 left to trip it
+@circuit(
+    failure_threshold=5,              # 5 full fetch_secret failures in a row (15 attempts total to call api)
+    recovery_timeout=30,              # after 30s, half open allows a test call
+    expected_exception=(
+        requests.exceptions.RequestException,  # network/HTTP errors
+        ValueError,                            # invalid sequence
+        SystemExit,                            # your final "gave up after retries" (technically this is the only one that really matters)
+    ),
+    name="random_org_fetch"
+)
 @sleep_and_retry
 @limits(calls=10, period=FIFTEEN_MINUTES)
 def fetch_secret(length: int) -> list[int]:
@@ -53,7 +66,7 @@ def fetch_secret(length: int) -> list[int]:
             
         except Exception:
             logging.warning("Trying again to fetch secret attempted=%d", attempt + 1)
-            if attempt <= len(RANDOM_ORG_RETRY_BACKOFFS):
+            if attempt < len(RANDOM_ORG_RETRY_BACKOFFS):
                 time.sleep(RANDOM_ORG_RETRY_BACKOFFS[attempt])
             continue
 
