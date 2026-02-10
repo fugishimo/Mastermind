@@ -1,113 +1,162 @@
+# api.py
 from fastapi import FastAPI, HTTPException
-from pydantic import BaseModel
-from typing import List
-from bridge import get_current
+from pydantic import BaseModel, Field
+from typing import Dict, List, Optional
+from uuid import uuid4
 import logging
-from random_org import fetch_secret
 
-app = FastAPI(title="mastermind-live", version="1.0.0")
+import game  # server-side domain logic
+from models import GameState
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s"
-)
+app = FastAPI(title="mastermind-live", version="2.0.0")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
 
-class Mastermind(BaseModel):
-    message: str
+# In-memory game store (server-owned)
+GAMES: Dict[str, GameState] = {}
 
-class ScoreboardEntry(BaseModel):
-    rank: int
-    player_index: int
+# ---------- Models ----------
+class CreateGameRequest(BaseModel):
+    mode: str = Field(..., description='1 single, 2 multi')
+    difficulty: str = Field(..., description='1=4,2=6,3=8')
+    num_players: Optional[int] = Field(1, ge=1, le=4)
+    shared_choice: Optional[str] = Field(None, description='multi only: 1 shared, 2 different')
+
+class CreateGameResponse(BaseModel):
+    game_id: str
+    length: int
+    attempts: int
+    num_players: int
+    shared_secret: bool
+
+class PlayerPublic(BaseModel):
+    index: int
+    attempts_left: int
     solved: bool
-    attempts_left: int 
+    hints_used: int
+    history: List[str]
 
-class LiveScoreboardResp(BaseModel):
-    finished: bool
-    scoreboard: List[ScoreboardEntry]
-
-class Summary(BaseModel):
+class GamePublicState(BaseModel):
+    game_id: str
     finished: bool
     length: int
+    attempts: int
     num_players: int
     shared_secret: bool
     current_player_index: int
-    current_player_attempts_left: int
-    current_player_solved: bool
-    current_player_hints_used: int
-    current_player_history: List[str]   
+    players: List[PlayerPublic]
 
-class Secrets(BaseModel):
-    current_player_secret: List[int]
+class GuessRequest(BaseModel):
+    guess: List[int]
 
+class GuessResponse(BaseModel):
+    feedback: str
+    correct_numbers: int
+    correct_locations: int
+    solved: bool
+    attempts_left: int
+    finished: bool
 
+class HintResponse(BaseModel):
+    hint: str
+    attempts_left: int
 
-@app.get("/", response_model=Mastermind)
-def root():
-    return {"message": "Welcome to the Mastermind. go to \"lhttp://127.0.0.1:8000/docs#\" to see the api working! hehe"}
-
-@app.get("/live/secrets",response_model=Secrets)
-def get_secrets():
-    g = get_current()
+# ---------- Helpers ----------
+def _get_game(game_id: str) -> GameState:
+    g = GAMES.get(game_id)
     if not g:
-        logging.warning("live_state: no_active_game")
-        raise HTTPException(404, "no_active_game")
-    current_player = g.players[g.round_state.current_player_idx]
-    return Secrets(current_player_secret=current_player.secret)
+        raise HTTPException(404, "game_not_found")
+    return g
 
-@app.get("/live/scoreboard", response_model=LiveScoreboardResp)
-def live_scoreboard():
-    from game import build_scoreboard
-
-    g = get_current()
-    if not g:
-        logging.warning("live_state: no_active_game")
-        raise HTTPException(404, "no_active_game")
-    
-    logging.info("live state: active game: game_id active finished=%s", g.finished)
-
-    ranked = build_scoreboard(g.players)
-
-    entries: list[ScoreboardEntry] = []
-    for rank, p in ranked:
-        entry = ScoreboardEntry(
-            rank=rank,
-            player_index=p.index,
-            solved=p.solved,
+def _public_state(game_id: str, g: GameState) -> GamePublicState:
+    players = []
+    for p in g.players:
+        players.append(PlayerPublic(
+            index=p.index,
             attempts_left=p.attempts_left,
-        )
-        entries.append(entry)
-
-    return LiveScoreboardResp(
-        finished=g.finished,
-        scoreboard=entries,
-    )
-
-@app.get("/live/summaryCurrentPlayer", response_model=Summary)
-def summary():
-    g = get_current()
-    if not g:
-        logging.warning("live_state: no_active_game")
-        raise HTTPException(404, "no_active_game")
-    
-    current_player = g.players[g.round_state.current_player_idx]
-    logging.info("live_state: current player index=%s and number of guesses left=%s", g.round_state.current_player_idx, current_player.attempts_left)
-    return Summary(
+            solved=p.solved,
+            hints_used=p.hints_used,
+            history=p.history,
+        ))
+    return GamePublicState(
+        game_id=game_id,
         finished=g.finished,
         length=g.config.length,
+        attempts=g.config.attempts,
         num_players=g.config.num_players,
         shared_secret=g.config.shared_secret,
         current_player_index=g.round_state.current_player_idx + 1,
-        current_player_attempts_left=current_player.attempts_left,
-        current_player_solved=current_player.solved,
-        current_player_hints_used=current_player.hints_used,
-        current_player_history=current_player.history,
+        players=players,
     )
 
-@app.post("/random/sequence")
-def random_sequence(length: int = 4):
-    try:
-        digits = fetch_secret(length)
-        return {"length": length, "sequence": digits}
-    except SystemExit:
-        logging.error("random_sequence: random.org failed")
-        raise HTTPException(status_code=500, detail="random.org unavailable")
+# ---------- Endpoints ----------
+@app.post("/games", response_model=CreateGameResponse, status_code=201)
+def create_game(req: CreateGameRequest):
+    cfg = game.build_game_config(req.mode, req.num_players, req.shared_choice, req.difficulty)
+    state = game.init_game(cfg)  # server generates secret(s) inside create_players()
+    game_id = str(uuid4())
+    GAMES[game_id] = state
+    logging.info("games:create id=%s players=%d shared=%s length=%d",
+                 game_id, cfg.num_players, cfg.shared_secret, cfg.length)
+    return CreateGameResponse(
+        game_id=game_id,
+        length=cfg.length,
+        attempts=cfg.attempts,
+        num_players=cfg.num_players,
+        shared_secret=cfg.shared_secret
+    )
+
+@app.get("/games/{game_id}", response_model=GamePublicState)
+def get_game(game_id: str):
+    g = _get_game(game_id)
+    return _public_state(game_id, g)
+
+@app.post("/games/{game_id}/hint", response_model=HintResponse)
+def take_hint(game_id: str):
+    g = _get_game(game_id)
+    p = game.current_player(g)
+
+    if p.attempts_left <= 1:
+        raise HTTPException(400, "one_left_no_hint")
+    if not game.can_take_hint(p, g.config):
+        raise HTTPException(400, "no_hints_left")
+
+    hint_text = game.give_hint(p, g.config)
+
+    # if nobody can play after spending hint attempt, finish
+    if not game.any_player_can_play(g):
+        g.finished = True
+
+    return HintResponse(hint=hint_text, attempts_left=p.attempts_left)
+
+@app.post("/games/{game_id}/guess", response_model=GuessResponse)
+def submit_guess(game_id: str, req: GuessRequest):
+    g = _get_game(game_id)
+    if g.finished:
+        raise HTTPException(400, "game_finished")
+
+    p = game.current_player(g)
+    if p.solved or p.attempts_left == 0:
+        # skip player automatically
+        game.advance_turn(g)
+        p = game.current_player(g)
+
+    # Validate guess length
+    if len(req.guess) != g.config.length:
+        raise HTTPException(400, "invalid_guess_length")
+
+    correct_numbers, correct_locations, feedback = game.process_guess(p, req.guess)
+
+    # advance or finish
+    if not game.any_player_can_play(g):
+        g.finished = True
+    else:
+        game.advance_turn(g)
+
+    return GuessResponse(
+        feedback=feedback,
+        correct_numbers=correct_numbers,
+        correct_locations=correct_locations,
+        solved=p.solved,
+        attempts_left=p.attempts_left,
+        finished=g.finished,
+    )

@@ -5,11 +5,14 @@ from constants import (
     HISTORY, HINT, MIN_DIGITS, MAX_DIGITS
 )
 from models import GameState
-from game import (
-    build_game_config, init_game, current_player, advance_turn, any_player_can_play,
-    can_take_hint, give_hint, process_guess, build_scoreboard
-)
-from formatting import guesses_remaining_line, render_guess_history, render_scoreboard, render_secret
+from formatting import guesses_remaining_line, render_guess_history, render_scoreboard_from_public_state
+import client_service
+import requests
+from typing import Optional
+
+# ----------------------------
+# Main
+# ----------------------------
 
 def main():
     while True:
@@ -19,7 +22,7 @@ def main():
         mode = input_until_valid({"1", "2"}, MSG_MODE_PROMPT)
 
         num_players = 1
-        shared_choice = None
+        shared_choice: Optional[str] = None
         if mode == "2":
             num_players = int(input_players(MSG_PLAYER_COUNT))
             shared_choice = input_until_valid({"1", "2"}, MSG_SHARED_PROMPT)
@@ -27,85 +30,112 @@ def main():
         # Difficulty
         diff = input_until_valid(set(DIFFICULTY_MAP.keys()), MSG_DIFFICULTY)
 
-        # Build/init
-        cfg = build_game_config(mode, num_players, shared_choice, diff)
-        state: GameState = init_game(cfg)
+        # Create game on backend (server generates secrets internally)
+        created = safe_backend_call(
+            client_service.create_game,
+            mode=mode,
+            difficulty=diff,
+            num_players=num_players,
+            shared_choice=shared_choice,
+        )
+        if not created:
+            # failed to create; restart prompt loop
+            continue
 
-        # Ask backend to create the game (backend generates secrets + sets bridge current)
-        # create_game(mode=mode, difficulty=diff, num_players=num_players, shared_choice=shared_choice)
+        game_id = created.get("game_id")
+        if not game_id:
+            print("\n[!] Backend response missing game_id.\n")
+            continue
 
-        # # Pull the created state from the bridge (since you run API + CLI in same process)
-        # state = get_current()
-        # if state is None:
-        #     raise RuntimeError("Backend did not create a game (no_active_game).")
-        # cfg = state.config
+        # We'll fetch state for rendering / validation.
+        state = safe_backend_call(client_service.get_game, game_id)
+        if not state:
+            continue
 
-        # Game loop
-        while not state.finished:
-            p = current_player(state)
-            if p.solved or p.attempts_left == 0:
-                advance_turn(state)
-                if state.finished:
-                    break
+        length = state["length"]
+
+        # Game loop: always drive via backend state
+        while True:
+            state = safe_backend_call(client_service.get_game, game_id)
+            if not state:
+                break
+
+            if state.get("finished"):
+                break
+
+            current_player_index = state["current_player_index"]
+            players = state["players"]
+            p = next((x for x in players if x["index"] == current_player_index), None)
+
+            if p is None:
+                print("\n[!] Backend state missing current player.\n")
+                break
+
+            # If server advances automatically, this should rarely happen,
+            # but we handle it by just refetching.
+            if p.get("solved") or p.get("attempts_left", 0) == 0:
                 continue
 
-            print(guesses_remaining_line(p))
+            print(guesses_remaining_line(p["attempts_left"], current_player_index))
             print(MSG_TURN_PROMPT)
             raw = input("> ").strip()
 
             # History
             if raw == HISTORY:
-                print(render_guess_history(p.history) if p.history else "")
+                history = p.get("history", [])
+                print(render_guess_history(history) if history else "")
                 continue
 
             # Hint
             if raw == HINT:
-                if p.attempts_left == 1:
+                if p.get("attempts_left", 0) == 1:
                     print(MSG_ONE_LEFT_NO_HINT)
                     continue
-                if not can_take_hint(p, cfg):
-                    print(MSG_NO_HINTS_LEFT)
+
+                cap = (length - 1) if num_players == 1 else 3
+                if p.get("hints_used", 0) >= cap:
+                    print("No hints remaining.")
                     continue
-                hint_text = give_hint(p, cfg)
-                print(hint_text)
+
+                hint_resp = safe_backend_call(client_service.take_hint, game_id)
+
+                print(hint_resp.get("hint", ""))
                 continue
 
             # Guess
-            guess = parse_guess(raw, cfg.length)
-            if guess is None or len(guess) != cfg.length or not all(MIN_DIGITS <= d <= MAX_DIGITS for d in guess):
+            guess = parse_guess(raw, length)
+            if guess is None or len(guess) != length or not all(MIN_DIGITS <= d <= MAX_DIGITS for d in guess):
                 print(MSG_INVALID_INPUT)
                 continue
 
-            correct_numbers, correct_locations, feedback = process_guess(p, guess)
-            print(feedback)
-            if p.solved:
+            guess_resp = safe_backend_call(client_service.submit_guess, game_id, guess)
+            if not guess_resp:
+                continue
+
+            print(guess_resp.get("feedback", ""))
+
+            if guess_resp.get("solved"):
                 print(MSG_ALL_CORRECT)
 
-            if not any_player_can_play(state):
-                state.finished = True
-            else:
-                advance_turn(state)
+        # Finished → scoreboard
+        final_state = safe_backend_call(client_service.get_game, game_id)
+        if final_state:
+            print("\nScoreboard:")
+            print(render_scoreboard_from_public_state(final_state.get("players", [])))
 
-        # Finished → scoreboard + reveals
-        ranked = build_scoreboard(state.players)
-        print("\nScoreboard:")
-        print(render_scoreboard(ranked))
-
-        if cfg.num_players == 1:
-            player = state.players[0]
-            if not player.solved:
-                print(MSG_OUT_OF_GUESSES.format(secret=render_secret(player.secret)))
-        else:
-            for _, pl in ranked:
-                if not pl.solved:
-                    print(f"Player {pl.index} did not solve. The correct sequence was: {render_secret(pl.secret)}")
+            # NOTE: In a real client/server design, you do NOT reveal secrets to clients.
+            # Your old CLI printed the secret on loss. Without a debug/admin endpoint,
+            # the frontend should not be able to see it.
 
         again = input_until_valid({"1", "2"}, MSG_PLAY_AGAIN)
         if again == "2":
             break
-        # else: full reset
+        # else: loop back and create a new game
 
-# input helpers
+
+# ----------------------------
+# Input Helpers
+# ----------------------------
 
 def input_until_valid(valid_set: set[str], prompt: str) -> str:
     while True:
@@ -132,6 +162,29 @@ def parse_guess(raw: str, length: int):
     try:
         return [int(x) for x in parts]
     except ValueError:
+        return None
+    
+
+def safe_backend_call(fn, *args, **kwargs):
+    """
+    Wraps requests errors into friendly CLI output.
+    """
+    try:
+        return fn(*args, **kwargs)
+    except requests.exceptions.ConnectionError:
+        print("\n[!] Cannot connect to backend. Make sure the server is running:")
+        print("    uvicorn api:app --reload\n")
+        return None
+    except requests.exceptions.HTTPError as e:
+        # Try to show API-provided detail
+        try:
+            detail = e.response.json()
+        except Exception:
+            detail = e.response.text if e.response is not None else str(e)
+        print(f"\n[!] Backend returned an error: {detail}\n")
+        return None
+    except requests.exceptions.RequestException as e:
+        print(f"\n[!] Network error: {e}\n")
         return None
 
 if __name__ == "__main__":
