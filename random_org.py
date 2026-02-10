@@ -13,6 +13,8 @@ from ratelimit import limits, sleep_and_retry
 from circuitbreaker import circuit
 
 FIFTEEN_MINUTES = 600 #used 10 seconds to test the  rate limiter 600 is for the actual program
+logger = logging.getLogger(__name__)
+
 
 #basically have 15 total attempts to call api before we trip the circuit breaker. 
 #if we fail to fetch the secret 3 times (retry limit = 3) than that will be 1 of 5 attempts, leaving 4 left to trip it
@@ -58,17 +60,19 @@ def fetch_secret(length: int) -> list[int]:
             
             digits = parse_response(resp.text)
             if is_valid_sequence(digits):
-                logging.info("valid sequence: length=%d attempts=%d taken to grab sequence", length, attempt)
+                logger.info("valid sequence: length=%d attempts=%d taken to grab sequence", length, attempt)
                 return digits
             
-            logging.warning("Random.org grabbed an invalid sequence digits=%d", digits)
+            # logging.warning("Random.org grabbed an invalid sequence digits=%d", digits)
             raise ValueError("Invalid sequence from Random.org")
             
-        except Exception:
-            logging.warning("Trying again to fetch secret attempted=%d", attempt + 1)
+        except Exception as e:
+            logger.debug(e)
+            logger.warning("Trying again to fetch secret attempted=%d", attempt + 1)
             if attempt < len(RANDOM_ORG_RETRY_BACKOFFS):
                 time.sleep(RANDOM_ORG_RETRY_BACKOFFS[attempt])
             continue
+
 
     logging.warning("Failed to fetch a valid sequence after retries length=%d and retries=%d", length, RANDOM_ORG_MAX_RETRIES)
     raise SystemExit("Failed to fetch random numbers after retries")

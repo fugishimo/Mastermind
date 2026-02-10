@@ -31,3 +31,7 @@ def score_guess(secret: List[int], guess: List[int]) -> Tuple[int, int]:
         correct_numbers += min(secret_count, guess_count)
     
     return (correct_numbers, correct_locations)
+
+digit = 0
+secret = 2
+guess = 3
