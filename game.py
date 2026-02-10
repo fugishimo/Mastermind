@@ -4,8 +4,6 @@ from constants import DIFFICULTY_MAP, MAX_ATTEMPTS
 from random_org import fetch_secret
 from score import score_guess
 from formatting import render_feedback, ordinal
-from client_service import get_random_sequence
-
 # build config/state
 
 def build_game_config(mode: str, num_players: int | None, shared_choice: str | None, difficulty: str) -> GameConfig:
@@ -16,18 +14,20 @@ def build_game_config(mode: str, num_players: int | None, shared_choice: str | N
 
 def create_players(cfg: GameConfig) -> List[Player]:
     players: List[Player] = []
+
     if cfg.num_players == 1:
-        secret = fetch_secret(cfg.length) #changed btw from original
+        secret = fetch_secret(cfg.length)
         players.append(Player(index=1, secret=secret, attempts_left=cfg.attempts))
         return players
 
     if cfg.shared_secret:
-        shared = get_random_sequence(cfg.length)
+        shared = fetch_secret(cfg.length)
         for i in range(cfg.num_players):
             players.append(Player(index=i + 1, secret=shared[:], attempts_left=cfg.attempts))
     else:
         for i in range(cfg.num_players):
-            players.append(Player(index=i + 1, secret=get_random_sequence(cfg.length), attempts_left=cfg.attempts))
+            players.append(Player(index=i + 1, secret=fetch_secret(cfg.length), attempts_left=cfg.attempts))
+
     return players
 
 def init_game(cfg: GameConfig) -> GameState:
