@@ -4,6 +4,7 @@ from constants import DIFFICULTY_MAP, MAX_ATTEMPTS
 from random_org import fetch_secret
 from score import score_guess
 from formatting import render_feedback, ordinal
+from client_service import get_random_sequence
 
 # build config/state
 
@@ -16,17 +17,17 @@ def build_game_config(mode: str, num_players: int | None, shared_choice: str | N
 def create_players(cfg: GameConfig) -> List[Player]:
     players: List[Player] = []
     if cfg.num_players == 1:
-        secret = fetch_secret(cfg.length)
+        secret = fetch_secret(cfg.length) #changed btw from original
         players.append(Player(index=1, secret=secret, attempts_left=cfg.attempts))
         return players
 
     if cfg.shared_secret:
-        shared = fetch_secret(cfg.length)
+        shared = get_random_sequence(cfg.length)
         for i in range(cfg.num_players):
             players.append(Player(index=i + 1, secret=shared[:], attempts_left=cfg.attempts))
     else:
         for i in range(cfg.num_players):
-            players.append(Player(index=i + 1, secret=fetch_secret(cfg.length), attempts_left=cfg.attempts))
+            players.append(Player(index=i + 1, secret=get_random_sequence(cfg.length), attempts_left=cfg.attempts))
     return players
 
 def init_game(cfg: GameConfig) -> GameState:
@@ -53,7 +54,7 @@ def any_player_can_play(state: GameState) -> bool:
 # hints
 
 def hint_cap(cfg: GameConfig) -> int:
-    return cfg.length if cfg.num_players == 1 else 3
+    return (cfg.length - 1) if cfg.num_players == 1 else 3
 
 def can_take_hint(p: Player, cfg: GameConfig) -> bool:
     if p.attempts_left <= 1:

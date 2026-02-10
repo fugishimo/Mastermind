@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List
 from bridge import get_current
 import logging
+from random_org import fetch_secret
 
 app = FastAPI(title="mastermind-live", version="1.0.0")
 
@@ -10,7 +11,6 @@ logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)s | %(message)s"
 )
-
 
 class Mastermind(BaseModel):
     message: str
@@ -103,46 +103,11 @@ def summary():
         current_player_history=current_player.history,
     )
 
-
-# extra endpoints i removed:
-
-# class PlayerState(BaseModel):
-#     index: int
-#     attempts_left: int
-#     solved: bool
-#     hints_used: int
-#     history: List[str]
-
-# class LiveStateResp(BaseModel):
-#     finished: bool
-#     length: int
-#     attempts: int
-#     num_players: int
-#     shared_secret: bool
-#     current_player_index: int
-#     players: List[PlayerState]
-
-# @app.get("/live/state", response_model=LiveStateResp)
-# def live_state():
-#     g = get_current()
-#     if not g:
-#         raise HTTPException(404, "no_active_game")
-#     players = [
-#         PlayerState(
-#             index=p.index,
-#             attempts_left=p.attempts_left,
-#             solved=p.solved,
-#             hints_used=p.hints_used,
-#             history=p.history,
-#         )
-#         for p in g.players
-#     ]
-#     return LiveStateResp(
-#         finished=g.finished,
-#         length=g.config.length,
-#         attempts=g.config.attempts,
-#         num_players=g.config.num_players,
-#         shared_secret=g.config.shared_secret,
-#         current_player_index=g.round_state.current_player_idx + 1,
-#         players=players,
-#     )
+@app.post("/random/sequence")
+def random_sequence(length: int = 4):
+    try:
+        digits = fetch_secret(length)
+        return {"length": length, "sequence": digits}
+    except SystemExit:
+        logging.error("random_sequence: random.org failed")
+        raise HTTPException(status_code=500, detail="random.org unavailable")

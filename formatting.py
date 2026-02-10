@@ -13,8 +13,6 @@ ORDINALS = {
 }
 
 def guesses_remaining_line(player) -> str:
-    # Single player: "N Guesses Remaining"
-    # Multiplayer:   "N Guesses Remaining - Player X"
     if player is None:
         return f"{MAX_ATTEMPTS} Guesses Remaining"
     return f"\n{player.attempts_left} Guesses Remaining - Player {player.index}"

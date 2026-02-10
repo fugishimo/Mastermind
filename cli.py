@@ -31,6 +31,15 @@ def main():
         cfg = build_game_config(mode, num_players, shared_choice, diff)
         state: GameState = init_game(cfg)
 
+        # Ask backend to create the game (backend generates secrets + sets bridge current)
+        # create_game(mode=mode, difficulty=diff, num_players=num_players, shared_choice=shared_choice)
+
+        # # Pull the created state from the bridge (since you run API + CLI in same process)
+        # state = get_current()
+        # if state is None:
+        #     raise RuntimeError("Backend did not create a game (no_active_game).")
+        # cfg = state.config
+
         # Game loop
         while not state.finished:
             p = current_player(state)
