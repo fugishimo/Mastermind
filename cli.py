@@ -94,7 +94,7 @@ def main():
 
                 cap = (length - 1) if num_players == 1 else 3
                 if p.get("hints_used", 0) >= cap:
-                    print("No hints remaining.")
+                    print(MSG_NO_HINTS_LEFT)
                     continue
 
                 hint_resp = safe_backend_call(client_service.take_hint, game_id)
@@ -123,14 +123,9 @@ def main():
             print("\nScoreboard:")
             print(render_scoreboard_from_public_state(final_state.get("players", [])))
 
-            # NOTE: In a real client/server design, you do NOT reveal secrets to clients.
-            # Your old CLI printed the secret on loss. Without a debug/admin endpoint,
-            # the frontend should not be able to see it.
-
         again = input_until_valid({"1", "2"}, MSG_PLAY_AGAIN)
         if again == "2":
             break
-        # else: loop back and create a new game
 
 
 # ----------------------------
