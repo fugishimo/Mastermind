@@ -5,6 +5,7 @@ from random_org import fetch_secret
 from score import score_guess
 from formatting import render_feedback, ordinal
 import random
+
 # build config/state
 
 def build_game_config(mode: str, num_players: int | None, shared_choice: str | None, difficulty: str) -> GameConfig:
@@ -17,30 +18,26 @@ def create_players(cfg: GameConfig) -> List[Player]:
     players: List[Player] = []
 
     if cfg.num_players == 1:
-        secret = fetch_secret(cfg.length)
-        try:
-            secret = fetch_secret(cfg.length)
-        except Exception:
-            secret = _local_secret(cfg.length)
+        secret = _get_secret(cfg.length)
         players.append(Player(index=1, secret=secret, attempts_left=cfg.attempts))
         return players
 
     if cfg.shared_secret:
-        try:
-            shared = fetch_secret(cfg.length)
-        except Exception:
-            shared = _local_secret(cfg.length)
+        shared = _get_secret(cfg.length)
         for i in range(cfg.num_players):
             players.append(Player(index=i + 1, secret=shared[:], attempts_left=cfg.attempts))
     else:
         for i in range(cfg.num_players):
-            try:
-                shared = fetch_secret(cfg.length)
-            except Exception:
-                shared = _local_secret(cfg.length)
+            shared = _get_secret(cfg.length)
             players.append(Player(index=i + 1, secret=shared, attempts_left=cfg.attempts))
 
     return players
+
+def _get_secret(length: int) -> list[int]:
+    try:
+        return fetch_secret(length)
+    except Exception:
+        return _local_secret(length)
 
 def _local_secret(length: int) -> list[int]:
     return [random.randint(MIN_DIGITS, MAX_DIGITS) for _ in range(length)]
