@@ -4,7 +4,6 @@ from constants import (
     MSG_NO_HINTS_LEFT, MSG_ALL_CORRECT, MSG_OUT_OF_GUESSES, MSG_PLAY_AGAIN,
     HISTORY, HINT, MIN_DIGITS, MAX_DIGITS
 )
-from models import GameState
 from formatting import guesses_remaining_line, render_guess_history, render_scoreboard_from_public_state
 import client_service
 import requests
