@@ -47,6 +47,11 @@ def main():
             print("\n[!] Backend response missing game_id.\n")
             continue
 
+        token_id = created.get("token")
+        if not token_id:
+            print("\n[!] Backend response missing token_id.\n")
+            continue
+
         # We'll fetch state for rendering / validation.
         state = safe_backend_call(client_service.get_game, game_id)
         if not state:
@@ -97,7 +102,7 @@ def main():
                     print(MSG_NO_HINTS_LEFT)
                     continue
 
-                hint_resp = safe_backend_call(client_service.take_hint, game_id)
+                hint_resp = safe_backend_call(client_service.take_hint, game_id, token_id)
 
                 print(hint_resp.get("hint", ""))
                 continue

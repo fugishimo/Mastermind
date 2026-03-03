@@ -36,4 +36,5 @@ class GameState:
     players: List[Player]
     round_state: RoundState
     finished: bool = False
+    token: str = ""
 
