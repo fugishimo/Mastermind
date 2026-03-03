@@ -1,5 +1,7 @@
 # api.py
-from fastapi import FastAPI, HTTPException
+from secrets import token_hex
+
+from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel, Field
 from typing import Dict, List, Optional
 from uuid import uuid4
@@ -23,6 +25,7 @@ class CreateGameRequest(BaseModel):
 
 class CreateGameResponse(BaseModel):
     game_id: str
+    token: str
     length: int
     attempts: int
     num_players: int
@@ -93,12 +96,14 @@ def _public_state(game_id: str, g: GameState) -> GamePublicState:
 def create_game(req: CreateGameRequest):
     cfg = game.build_game_config(req.mode, req.num_players, req.shared_choice, req.difficulty)
     state = game.init_game(cfg)  # server generates secret(s) inside create_players()
+    state.token = token_hex(32)
     game_id = str(uuid4())
     GAMES[game_id] = state
     logging.info("games:create id=%s players=%d shared=%s length=%d",
                  game_id, cfg.num_players, cfg.shared_secret, cfg.length)
     return CreateGameResponse(
         game_id=game_id,
+        token=state.token,
         length=cfg.length,
         attempts=cfg.attempts,
         num_players=cfg.num_players,
@@ -111,8 +116,9 @@ def get_game(game_id: str):
     return _public_state(game_id, g)
 
 @app.post("/games/{game_id}/hint", response_model=HintResponse)
-def take_hint(game_id: str):
+def take_hint(game_id: str, token: str = Header(...)):
     g = _get_game(game_id)
+    _verify_token(g, token)
     p = game.current_player(g)
 
     if p.attempts_left <= 1:
@@ -129,8 +135,9 @@ def take_hint(game_id: str):
     return HintResponse(hint=hint_text, attempts_left=p.attempts_left)
 
 @app.post("/games/{game_id}/guess", response_model=GuessResponse)
-def submit_guess(game_id: str, req: GuessRequest):
+def submit_guess(game_id: str, req: GuessRequest, token: str = Header(...)):
     g = _get_game(game_id)
+    _verify_token(g, token)
     if g.finished:
         raise HTTPException(400, "game_finished")
 
@@ -160,3 +167,8 @@ def submit_guess(game_id: str, req: GuessRequest):
         attempts_left=p.attempts_left,
         finished=g.finished,
     )
+
+# ---------- Helper ----------
+def _verify_token(g: GameState, token: str):
+    if token != g.token:
+        raise HTTPException(403, "invalid_token")

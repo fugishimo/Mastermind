@@ -20,12 +20,12 @@ def get_game(game_id: str) -> Dict[str, Any]:
     r.raise_for_status()
     return r.json()
 
-def submit_guess(game_id: str, guess: List[int]) -> Dict[str, Any]:
-    r = requests.post(f"{BASE_URL}/games/{game_id}/guess", json={"guess": guess}, timeout=10)
+def submit_guess(game_id: str, guess: List[int], token: str) -> Dict[str, Any]:
+    r = requests.post(f"{BASE_URL}/games/{game_id}/guess", json={"guess": guess}, headers={"token": token}, timeout=10)
     r.raise_for_status()
     return r.json()
 
-def take_hint(game_id: str) -> Dict[str, Any]:
-    r = requests.post(f"{BASE_URL}/games/{game_id}/hint", timeout=10)
+def take_hint(game_id: str, token: str) -> Dict[str, Any]:
+    r = requests.post(f"{BASE_URL}/games/{game_id}/hint", headers={"token": token}, timeout=10)
     r.raise_for_status()
     return r.json()
