@@ -112,7 +112,7 @@ def main():
                 print(MSG_INVALID_INPUT)
                 continue
 
-            guess_resp = safe_backend_call(client_service.submit_guess, game_id, guess)
+            guess_resp = safe_backend_call(client_service.submit_guess, game_id, guess, token_id)
             if not guess_resp:
                 continue
 
